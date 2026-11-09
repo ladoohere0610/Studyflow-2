@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StudyFlow</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700;800&family=Nunito+Sans:wght@400;600;700&display=swap">
+<style>
+:root{--teal:#0b3d4a;--teal2:#14586a;--sun:#ffc533;--paper:#f6f8f9;--ink:#10262d;--mute:#51666e;--line:#d8e2e5;--ok:#168a5a;--bad:#c23b2e}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:"Nunito Sans",Verdana,sans-serif;color:var(--ink);background:var(--paper);line-height:1.5}
+h1,h2,h3,.brand{font-family:Sora,"Trebuchet MS",sans-serif}
+.app{min-height:100vh;display:grid;grid-template-columns:minmax(260px,380px) 1fr}
+aside{background:linear-gradient(160deg,var(--teal),var(--teal2));color:#fff;padding:40px 36px;display:flex;flex-direction:column;justify-content:space-between}
+.brand{font-size:1.5rem;font-weight:800;display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--sun);display:grid;place-items:center;color:var(--teal);font-size:1.1rem}
+.tag{font-family:Sora,sans-serif;font-size:1.7rem;font-weight:700;line-height:1.25;margin:0}
+ol.steps{list-style:none;padding:0;margin:0;display:grid;gap:14px}
+ol.steps li{display:flex;align-items:center;gap:12px;opacity:.6;font-weight:600}
+ol.steps li i{font-style:normal;width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.6);display:grid;place-items:center;font-size:.85rem}
+ol.steps li.on{opacity:1}
+ol.steps li.on i{background:var(--sun);border-color:var(--sun);color:var(--teal)}
+ol.steps li.done{opacity:.9}
+ol.steps li.done i{background:#fff;color:var(--teal);border-color:#fff}
+main{display:grid;place-items:center;padding:32px 20px}
+section{width:100%;max-width:520px}
+h1{font-size:2.3rem;line-height:1.15;margin:0 0 12px;font-weight:800}
+h2{font-size:1.7rem;line-height:1.2;margin:0 0 10px;font-weight:800}
+.lead{font-size:1.1rem;color:var(--mute);margin:0 0 26px}
+label{display:block;font-weight:700;margin:18px 0 6px}
+input,select{width:100%;padding:13px 14px;font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line);border-radius:10px}
+input:focus,select:focus{border-color:var(--teal2);outline:none;box-shadow:0 0 0 4px rgba(20,88,106,.18)}
+.bad{border-color:var(--bad)}
+.err{color:var(--bad);font-size:.9rem;font-weight:600;min-height:1.3em;margin-top:4px}
+button{font:inherit;font-weight:700;cursor:pointer;border-radius:12px;padding:14px 24px;border:2px solid transparent;transition:transform .15s,box-shadow .15s}
+.go{background:var(--teal);color:#fff;box-shadow:0 6px 0 #062830}
+.go:hover{transform:translateY(-2px)}
+.go:active{transform:translateY(4px);box-shadow:0 2px 0 #062830}
+.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.ghost:hover{border-color:var(--teal2)}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.perks{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:12px}
+.perks li{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-weight:600}
+.perks small{display:block;font-weight:400;color:var(--mute)}
+.note{font-size:.9rem;color:var(--mute);margin-top:16px}
+.stat{display:flex;gap:14px;margin:0 0 22px}
+.stat div{flex:1;background:var(--teal);color:#fff;border-radius:14px;padding:16px}
+.stat b{font-family:Sora,sans-serif;font-size:1.8rem;display:block}
+.stat div+div{background:var(--sun);color:var(--teal)}
+.task{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-left:6px solid var(--teal2);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.task.new{animation:pop .5s ease}
+.task.done{opacity:.55;border-left-color:var(--ok)}
+.task.done .t{text-decoration:line-through}
+.task .t{font-weight:700}
+.task .m{font-size:.9rem;color:var(--mute)}
+.task .info{flex:1}
+.chip{font-size:.8rem;font-weight:700;padding:4px 10px;border-radius:99px;background:#e4f3ee;color:var(--ok);white-space:nowrap}
+.chip.soon{background:#fff1cc;color:#7a5600}.chip.late{background:#fbe3e0;color:var(--bad)}
+.chk{width:26px;height:26px;padding:0;border-radius:8px;border:2px solid var(--teal2);background:#fff;color:#fff;font-size:.9rem;flex:none}
+.done .chk{background:var(--ok);border-color:var(--ok)}
+.fx{position:fixed;top:0;width:10px;height:14px;z-index:9;pointer-events:none;animation:fall 1.6s ease-in forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.9}}
+@keyframes pop{0%{transform:scale(.94);opacity:0}100%{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+[hidden]{display:none!important}
+@media (max-width:760px){.app{grid-template-columns:1fr}aside{padding:22px;gap:16px}.tag,ol.steps{display:none}h1{font-size:1.9rem}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <div class="brand"><span class="logo">✓</span>StudyFlow</div>
+  <p class="tag">Know what's due. Get it done. Stay ahead.</p>
+  <ol class="steps" id="steps">
+    <li><i>1</i>Welcome</li><li><i>2</i>How it works</li><li><i>3</i>First homework</li><li><i>4</i>Reminders</li>
+  </ol>
+</aside>
+<main>
+<section id="s0">
+  <h1>Take charge of your homework.</h1>
+  <p class="lead">Add a task in under a minute and always know what's due next.</p>
+  <button class="go" data-go="1">Get started</button>
+</section>
+
+<section id="s1" hidden>
+  <h2>Three things, no clutter</h2>
+  <p class="lead">StudyFlow keeps your schoolwork simple.</p>
+  <ul class="perks">
+    <li>Add homework<small>Title, subject and due date. That's all it needs.</small></li>
+    <li>See what's urgent<small>Tasks show how many days you have left.</small></li>
+    <li>Tick it off<small>Finish a task and watch your list clear.</small></li>
+  </ul>
+  <div class="row"><button class="go" data-go="2">Add my first homework</button></div>
+</section>
+
+<section id="s2" hidden>
+  <h2>What's your first homework?</h2>
+  <p class="lead">Let's get one task on your list.</p>
+  <form id="form" novalidate>
+    <label for="title">Title</label>
+    <input id="title" placeholder="e.g. Chapter 4 practice questions">
+    <div class="err" id="e-title"></div>
+    <label for="subject">Subject</label>
+    <select id="subject"><option value="">Choose a subject</option><option>Maths</option><option>Science</option><option>English</option><option>Social Studies</option><option>Other</option></select>
+    <div class="err" id="e-subject"></div>
+    <label for="due">Due date</label>
+    <input id="due" type="date">
+    <div class="err" id="e-due"></div>
+    <div class="row"><button class="go" type="submit">Save homework</button></div>
+  </form>
+  <p class="note">StudyFlow never asks for your camera, microphone, contacts or location.</p>
+</section>
+
+<section id="s3" hidden>
+  <h2>Your first task is saved.</h2>
+  <p class="lead">Want a reminder before homework is due? It's your choice, and StudyFlow works either way.</p>
+  <div class="row">
+    <button class="go" id="enable">Turn on reminders</button>
+    <button class="ghost" id="skip">Not now</button>
+  </div>
+</section>
+
+<section id="s4" hidden>
+  <h2 id="dtitle">Your homework</h2>
+  <p class="lead" id="dmsg"></p>
+  <div class="stat"><div><b id="n-open">0</b>to do</div><div><b id="n-done">0</b>done</div></div>
+  <div id="list"></div>
+  <div class="row"><button class="ghost" id="again">Add another homework</button></div>
+</section>
+</main>
+</div>
+
+<script>
+var tasks=[];
+try{tasks=JSON.parse(localStorage.getItem("studyflow-tasks")||"[]")}catch(e){}
+function save(){try{localStorage.setItem("studyflow-tasks",JSON.stringify(tasks))}catch(e){}}
+function $(id){return document.getElementById(id)}
+
+function show(n){
+  for(var i=0;i<5;i++){$("s"+i).hidden=(i!==n)}
+  var lis=document.querySelectorAll("#steps li");
+  lis.forEach(function(li,i){
+    var cur=Math.min(n,3);
+    li.className=i<cur?"done":(i===cur?"on":"");
+    if(n===4)li.className="done";
+  });
+  var h=document.querySelector("#s"+n+" h1,#s"+n+" h2");
+  h.setAttribute("tabindex","-1");h.focus();
+}
+document.querySelectorAll("[data-go]").forEach(function(b){
+  b.addEventListener("click",function(){show(+b.dataset.go)});
+});
+
+function daysLeft(d){
+  var t=new Date();t.setHours(0,0,0,0);
+  return Math.round((new Date(d+"T00:00:00")-t)/86400000);
+}
+function chip(d){
+  var n=daysLeft(d),c=document.createElement("span");c.className="chip";
+  if(n<0){c.className+=" late";c.textContent="Overdue"}
+  else if(n===0){c.className+=" soon";c.textContent="Due today"}
+  else if(n<=2){c.className+=" soon";c.textContent=n+" day"+(n>1?"s":"")+" left"}
+  else c.textContent=n+" days left";
+  return c;
+}
+function render(newId){
+  var list=$("list");list.innerHTML="";
+  var o=0,dn=0;
+  tasks.slice().sort(function(a,b){return (a.done-b.done)||a.due.localeCompare(b.due)}).forEach(function(t){
+    t.done?dn++:o++;
+    var d=document.createElement("div");d.className="task"+(t.done?" done":"")+(t.id===newId?" new":"");
+    var k=document.createElement("button");k.className="chk";k.type="button";k.textContent="✓";
+    k.setAttribute("aria-label",(t.done?"Mark not done: ":"Mark done: ")+t.title);
+    k.addEventListener("click",function(){t.done=!t.done;save();render()});
+    var info=document.createElement("div");info.className="info";
+    var a=document.createElement("div");a.className="t";a.textContent=t.title;
+    var m=document.createElement("div");m.className="m";m.textContent=t.subject+" · due "+t.due;
+    info.appendChild(a);info.appendChild(m);
+    d.appendChild(k);d.appendChild(info);
+    if(!t.done)d.appendChild(chip(t.due));
+    list.appendChild(d);
+  });
+  $("n-open").textContent=o;$("n-done").textContent=dn;
+}
+function confetti(){
+  var cols=["#ffc533","#0b3d4a","#14586a","#168a5a","#ffffff"];
+  for(var i=0;i<46;i++){
+    var s=document.createElement("span");s.className="fx";
+    s.style.left=Math.random()*100+"vw";s.style.background=cols[i%cols.length];
+    s.style.animationDelay=Math.random()*.4+"s";s.style.borderRadius=i%2?"50%":"2px";
+    document.body.appendChild(s);
+    setTimeout(function(x){x.remove()},2400,s);
+  }
+}
+function toDash(msg,id,fx){
+  $("dmsg").textContent=msg;render(id);show(4);
+  if(fx&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches)confetti();
+}
+
+var lastId=null;
+$("form").addEventListener("submit",function(e){
+  e.preventDefault();
+  var title=$("title").value.trim(),subject=$("subject").value,due=$("due").value;
+  $("e-title").textContent=title?"":"Enter a title for your homework.";
+  $("e-subject").textContent=subject?"":"Choose a subject.";
+  $("e-due").textContent=due?"":"Pick a due date.";
+  $("title").className=title?"":"bad";$("subject").className=subject?"":"bad";$("due").className=due?"":"bad";
+  if(!title||!subject||!due)return;
+  lastId=Date.now();
+  tasks.push({id:lastId,title:title,subject:subject,due:due,done:false});
+  save();show(3);
+});
+$("skip").addEventListener("click",function(){
+  toDash("Task saved. Reminders are off. You can still track everything here.",lastId,true);
+});
+$("enable").addEventListener("click",function(){
+  if(!("Notification" in window)){toDash("Task saved. This browser can't send reminders.",lastId,true);return}
+  Notification.requestPermission().then(function(p){
+    if(p==="granted"){
+      new Notification("StudyFlow reminders are on",{body:"We'll remind you when homework is due.",tag:"studyflow-welcome"});
+      toDash("Task saved and reminders are on. Great start!",lastId,true);
+    }else{
+      toDash("Task saved. Reminders are off. You can still track everything here.",lastId,true);
+    }
+  });
+});
+$("again").addEventListener("click",function(){$("form").reset();show(2)});
+
+if(tasks.length){$("dmsg").textContent="Welcome back. Here's what's on your list.";render();show(4)}
+else show(0);
+</script>
+</body>
+</html>
